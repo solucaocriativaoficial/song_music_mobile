@@ -1,12 +1,9 @@
-import React from 'react';
+import React,{useEffect, useState} from 'react';
 import {
     Text,
     View,
     TouchableOpacity,
-    Animated,
     Image,
-    TextInput,
-    FlatList,
     StatusBar,
 }from 'react-native';
 
@@ -16,23 +13,26 @@ import iconGoBack from '../../assets/icon-goBack.png';
 import iconFavoriteOn from '../../assets/icon-favorite-on.png';
 import iconFavoriteOff from '../../assets/icon-favorite-off.png';
 import iconPlay from '../../assets/icon-play.png';
-
-const data = {
-    urlMusic: "",
-    strofes:[
-        {
-            strofe: "Restaura, meu ser (2x)\nRestaura, meu viver\nRestaura,minha desilusão\nRestaura,meu quebrantado coração",
-            repeat: 0,
-        },
-        {
-            strofe: "Restaura, meu sonhos\nRestaura, os meu planos senhor\nRestaura, minha vida por completo\nPra que todos saibam que tu és meu deus",
-            repeat: 0,
-        }
-    ],
-}
+import {findById} from '../../Components/database/controllers/letterController';
 
 export default function SelectedSong({route, navigation}){
-    const {song_name, cd, year} = route.params;
+    const {song_name, cd, song_id, year} = route.params;
+    const [dataLetter, setDataLetter] = useState([]);
+    const [message, setMessage] = useState('Carregando letra');
+
+    useEffect(() => {
+        async function getLetter(){
+            const {length, _array} = await findById(song_id);
+            if(length)
+            setDataLetter(_array)
+
+            else
+            setMessage('Esta música não tem letra ainda!')
+        }
+
+        getLetter();
+    },[])
+
     return(
         <>
         <StatusBar barStyle="light-content" backgroundColor={StylePattern.color_black} animated={true}/>
@@ -55,11 +55,14 @@ export default function SelectedSong({route, navigation}){
                 </View>
             </View>
             <View>
-                {data.strofes.map((strofe, index) => (
-                    <View style={{marginVertical: 20, alignItems: "center"}} key={index}>
-                        <Text style={{textAlign: "center", fontSize: 18, color: "#fff", lineHeight: 25,}}>{strofe.strofe}</Text>
-                    </View>
-                ))}
+                {
+                    !dataLetter.length ? <Text>{message}</Text>:
+                    dataLetter.map((letter, index) => (
+                        <View style={{marginVertical: 20, alignItems: "center"}} key={index}>
+                            <Text style={{textAlign: "center", fontSize: 18, color: "#fff", lineHeight: 25,}}>{letter.strofe}</Text>
+                        </View>
+                    ))
+                }
             </View>
         </View>
         </>
