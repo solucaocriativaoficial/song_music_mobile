@@ -15,7 +15,7 @@ db.transaction(ctx => {
     ctx.executeSql(queryTableStrofes);
     ctx.executeSql(queryTableAccess);
     ctx.executeSql(queryViewSongComplete);
-}, error => console.log('Ixi não foi spossivel criar sa tabelas'))
+}, error => console.log(error))
 
 const insertDateFirstAccess = `insert into access_devices (date_first_access, date_current_access) values (?,?)`;
 
@@ -24,6 +24,6 @@ db.transaction(ctx => {
         if(!_array.length)
         ctx.executeSql(insertDateFirstAccess, [currentTime(), currentTime()]);
     });
-}, error => console.log('erro grande'))
+}, error => console.log(error))
 
 export default db;
