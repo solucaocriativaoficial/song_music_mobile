@@ -5,6 +5,8 @@ import isConnected from '../isConnected';
 import SyncCd from '../database/SyncCd';
 import SyncSong from '../database/SyncSong';
 import SyncLetter from '../database/SyncLetter';
+import {addCurrentTime} from '../database/controllers/Access_devicesController';
+import {currentTime} from '../generatorDate';
 
 export default function SyncStatus({show, close = () => {}}){
     const animationViewUp = useRef(new Animated.Value(0)).current;
@@ -24,6 +26,8 @@ export default function SyncStatus({show, close = () => {}}){
 
                 const responseSyncLetter = await SyncLetter();
                 setTextMessage(responseSyncLetter.message);
+
+                await addCurrentTime(currentTime());
                 
                 setTimeout(() => close(), 500);
             }
