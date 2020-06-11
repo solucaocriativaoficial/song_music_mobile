@@ -7,6 +7,8 @@ async function firstAccess(){
         const getDataCloud = await Api.get('/song/list/');
         const {count, content} = getDataCloud.data;
 
+        console.log(content)
+
         if(count)
         await insert(content);
 
@@ -23,11 +25,19 @@ async function syncUpdate(){
         const {date_current_access} = dataAccessDevices._array[0];
         const getDataCloud = await Api.post('/sync/song/',{dateTime: date_current_access});
         const {count, content} = getDataCloud.data;
-
         if(count)
-        await update(content);
+        {
+            const {update: updateList, news} = content;
+            if(updateList.length)
+            await update(updateList);
 
-        return {sync: true, message: 'Song atualizado com sucesso!'}
+            if(news.length)
+            await insert(news);
+
+            return {sync: true, message: 'Songs atualizados com sucesso!'}
+        }
+        else
+        return {sync: true, message: 'Songs estão atualizados!'}
         
     } catch (error) {
         return {sync: false, message: error}

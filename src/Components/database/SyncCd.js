@@ -23,11 +23,19 @@ async function syncUpdate(){
         const {date_current_access} = dataAccessDevices._array[0];
         const getDataCloud = await Api.post('/sync/cd/',{dateTime: date_current_access});
         const {count, content} = getDataCloud.data;
-
         if(count)
-        await update(content);
+        {
+            const {update: updateList, news} = content;
+            if(updateList.length)
+            await update(updateList);
 
-        return {sync: true, message: 'Cd atualizado com sucesso!'}
+            if(news.length)
+            await insert(news);
+
+            return {sync: true, message: 'Cds atualizados com sucesso!'}
+        }
+        else
+        return {sync: true, message: 'Cds estão atualizados!'}
         
     } catch (error) {
         return {sync: false, message: error}

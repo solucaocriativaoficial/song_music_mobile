@@ -8,9 +8,13 @@ async function firstAccess(){
         const {count, content} = getDataCloud.data;
 
         if(count)
-        await insert(content);
+        {
+            await insert(content);
+            return {sync: true, message: 'Letras atualizadas com sucesso!'}
+        }
 
-        return {sync: true, message: 'Letras atualizadas com sucesso!'}
+        else
+        return {sync: false, message: 'Nenhuma letra encontrada'}
         
     } catch (error) {
         return {sync: false, message: error}
@@ -23,11 +27,19 @@ async function syncUpdate(){
         const {date_current_access} = dataAccessDevices._array[0];
         const getDataCloud = await Api.post('/sync/letter/',{dateTime: date_current_access});
         const {count, content} = getDataCloud.data;
-
         if(count)
-        await update(content);
+        {
+            const {update: updateList, news} = content;
+            if(updateList.length)
+            await update(updateList);
 
-        return {sync: true, message: 'Letras atualizadas com sucesso!'}
+            if(news.length)
+            await insert(news);
+
+            return {sync: true, message: 'Letras atualizadas com sucesso!'}
+        }
+        else
+        return {sync: true, message: 'Letras estão atualizadas!'}
         
     } catch (error) {
         return {sync: false, message: error}
