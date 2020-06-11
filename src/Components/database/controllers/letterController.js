@@ -11,6 +11,17 @@ export function findAll(){
     })
 }
 
+export function findById(song){
+    return new Promise((resolve, reject) => {
+        Connection.transaction(ctx => {
+            ctx.executeSql(
+                'select * from letter where song=? order by sequence',[song], 
+                (_, {rows}) => resolve(rows), 
+                error => reject(error))
+        })
+    })
+}
+
 export function insert(content){
     return new Promise((resolve, reject) => {
         Connection.transaction(ctx => {
@@ -18,7 +29,9 @@ export function insert(content){
                 const {_id, strofe, song, sequence, createdAt, updateAt} = letter;
                 ctx.executeSql(
                     `insert into letter (id ,strofe, song, sequence, createdAt, updateAt) values(?,?,?,?,?,?)`,
-                    [_id, strofe, song, sequence, createdAt, updateAt]
+                    [_id, strofe, song, sequence, createdAt, updateAt],
+                    () => console.log(`${_id} foi cadastrado com sucesso`),
+                    error => console.log(error)
                 )
             })
         },
