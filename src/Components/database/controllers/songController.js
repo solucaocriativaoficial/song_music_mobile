@@ -35,7 +35,7 @@ export function update(content){
                 const {_id, song_name, cd, createdAt, updateAt} = song;
                 ctx.executeSql(
                     `update song  set song_name=?, cd=?, createdAt=?, updateAt=? where id=?`,
-                    [song_name, cd, createdAt, updateAt, _id],
+                    [song_name, cd.cd_id, createdAt, updateAt, _id],
                     () => {},
                     err => {
                         console.log(err)
