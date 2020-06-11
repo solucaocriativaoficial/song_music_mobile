@@ -11,8 +11,7 @@ export function getAccessDevice(){
     })
 }
 
-export function addCurrentTime({time}){
-    console.log(time)
+export function addCurrentTime(time){
     return new Promise((resolve, reject) => {
         Connection.transaction(ctx => {
             ctx.executeSql(
