@@ -3,7 +3,6 @@ import {
     Text,
     View,
     TouchableOpacity,
-    Animated,
     Image,
     TextInput,
     FlatList,
@@ -14,8 +13,8 @@ import Logo from '../../assets/icon-logo.png';
 import iconSearch from "../../assets/icon-search.png";
 import iconFavoriteOn from '../../assets/icon-favorite-on.png';
 import iconFavoriteOff from '../../assets/icon-favorite-off.png';
-import Connection from '../../Components/database/Conection';
 import ModalSyncStatus from '../../Components/Modals/SyncStatus';
+import {SongCompleteController} from '../../Components/database/controllers/SongCompleteController';
 
 export default function Initial({navigation}){
     const [songs,setSongs] = useState([]);
@@ -24,20 +23,11 @@ export default function Initial({navigation}){
 
     useEffect(() => {
         async function getList(){
-            Connection.transaction(ctx => {
-                ctx.executeSql("select * from song_complete", [], (_, { rows }) => {
-                    if(rows.length)
-                    setSongs(rows)
-
-                    else
-                    {
-                        setMessageMain('Abaixando conteúdo da internet');
-                    }
-                }, error => console.log(error))
-            })
+            const {_array} = await SongCompleteController();
+            setSongs(_array)
         }
         getList();
-    },[])
+    },[syncData])
 
     return(
         <>
@@ -60,23 +50,25 @@ export default function Initial({navigation}){
                 <FlatList
                     style={Style.contentSongs}
                     data={songs}
-                    renderItem={({item, index}) => (
-                        <View style={Style.containerSong} key={index}>
+                    renderItem={({item}) => (
+                        <View style={Style.containerSong}>
                             <TouchableOpacity style={Style.containerName} onPress={()=>{
-                                // navigation.navigate("SelectedSong",{
-                                //     song_name: item.song_name,
-                                //     cd: item.cd_name,
-                                //     year: item.year
-                                // })
+                                navigation.navigate("SelectedSong",{
+                                    song_id: item.song_id,
+                                    song_name: item.song_name,
+                                    cd: item.cd_name,
+                                    year: item.year
+                                })
                             }}>
                                 <Text style={Style.nameSong}>{item.song_name}</Text>
                                 <Text style={Style.cd}>{`${item.cd_name} - ${item.year}`}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={Style.btnFavorite}>
-                                <Image source={iconFavoriteOff} alt="Favoritar" style={Style.iconFavorite}/>
+                                <Image source={item.favorite ? iconFavoriteOn : iconFavoriteOff} alt="Favoritar" style={Style.iconFavorite}/>
                             </TouchableOpacity>
                         </View>
                     )}
+                    keyExtractor={item => item.song_id}
                 />
             }
         </View>
