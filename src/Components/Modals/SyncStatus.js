@@ -5,8 +5,7 @@ import isConnected from '../isConnected';
 import SyncCd from '../database/SyncCd';
 import SyncSong from '../database/SyncSong';
 import SyncLetter from '../database/SyncLetter';
-import {addCurrentTime} from '../database/controllers/Access_devicesController';
-import {currentTime} from '../generatorDate';
+import {addLastAcess} from '../database/controllers/Access_devicesController';
 
 export default function SyncStatus({show, close = () => {}}){
     const animationViewUp = useRef(new Animated.Value(0)).current;
@@ -14,34 +13,27 @@ export default function SyncStatus({show, close = () => {}}){
 
     useEffect(() => {
         async function getConnection(){
-            const connectionNetwork = await isConnected();
-            if(connectionNetwork !== null & connectionNetwork)
-            {
-                setTextMessage("Buscando dados online");
+            try {
+                await isConnected();
+                setTextMessage("Sincronizando...");
+
                 const responseSyncCd = await SyncCd();
-                setTextMessage(responseSyncCd.message);
-
                 const responseSyncSong = await SyncSong();
-                setTextMessage(responseSyncSong.message);
-
                 const responseSyncLetter = await SyncLetter();
-                setTextMessage(responseSyncLetter.message);
 
-                await addCurrentTime(currentTime());
+                await addLastAcess();
+                setTextMessage('Tudo atualizado!')
                 
-                setTimeout(() => close(), 500);
-            }
-
-            if(connectionNetwork !== null & !connectionNetwork)
-            {
-                setTextMessage("Você desconectado da rede");
+                setTimeout(() => close(), 1000);
+            } catch (error) {
+                setTextMessage(error);
                 setTimeout(() => close(), 1000);
             }
         }
 
         if(show)
         getConnection();
-    }, [isConnected])
+    }, [])
 
     if(show)
     Animated.spring(animationViewUp, {
