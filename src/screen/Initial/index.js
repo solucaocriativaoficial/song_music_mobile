@@ -7,27 +7,47 @@ import {
     TextInput,
     FlatList,
     StatusBar,
+    Keyboard
 }from 'react-native';
 import Style from './Style';
 import Logo from '../../assets/icon-logo.png';
 import iconSearch from "../../assets/icon-search.png";
-import iconFavoriteOn from '../../assets/icon-favorite-on.png';
-import iconFavoriteOff from '../../assets/icon-favorite-off.png';
 import ModalSyncStatus from '../../Components/Modals/SyncStatus';
-import {SongCompleteController} from '../../Components/database/controllers/SongCompleteController';
+import {SongCompleteController, SearchSong} from '../../Components/database/controllers/SongCompleteController';
+import Favoritar from '../../Components/Favorite';
 
 export default function Initial({navigation}){
     const [songs,setSongs] = useState([]);
     const [messageMain, setMessageMain] = useState('Carregando');
     const [syncData, setSyncData] = useState(true);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         async function getList(){
-            const {_array} = await SongCompleteController();
-            setSongs(_array)
+            try {
+                const {_array} = await SongCompleteController();
+                setSongs(_array)
+
+                if(!_array.length)
+                setMessageMain('Nenhum Song encontrado!')
+            } catch (error) {
+                console.log(error)
+            }
         }
+
+        async function getSearch(){
+            const {count,_array} = await SearchSong(search);
+            setSongs(_array)
+            if(!count)
+            setMessageMain('Nenhum Song encontrado')
+        }
+
+        if(search !== '')
+        getSearch()
+
+        else
         getList();
-    },[syncData])
+    },[syncData, search])
 
     return(
         <>
@@ -42,6 +62,8 @@ export default function Initial({navigation}){
                     <TextInput
                         style={Style.input}
                         placeholder="Digite o nome de um song"
+                        value={search}
+                        onChangeText={content => setSearch(content)}
                     />
                 </View>
             </View>
@@ -59,13 +81,13 @@ export default function Initial({navigation}){
                                     cd: item.cd_name,
                                     year: item.year
                                 })
+
+                                Keyboard.dismiss()
                             }}>
                                 <Text style={Style.nameSong}>{item.song_name}</Text>
                                 <Text style={Style.cd}>{`${item.cd_name} - ${item.year}`}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={Style.btnFavorite}>
-                                <Image source={item.favorite ? iconFavoriteOn : iconFavoriteOff} alt="Favoritar" style={Style.iconFavorite}/>
-                            </TouchableOpacity>
+                            <Favoritar item={item}/>
                         </View>
                     )}
                     keyExtractor={item => item.song_id}

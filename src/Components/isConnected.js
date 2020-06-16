@@ -1,12 +1,21 @@
-import * as Network from 'expo-network';
+import NetInfo from '@react-native-community/netinfo'
 
-const isConnected = async () => {
-    const {isConnected, isInternetReachable} = await Network.getNetworkStateAsync();
-    if(isConnected & isInternetReachable)
-    return true;
+const verifyConnectionNetwork = () => {
+    return new Promise((resolve, reject) => {
+        NetInfo.addEventListener(state => {
+            if(state.type === "wifi")
+            {
+                if(state.isInternetReachable)
+                resolve()
 
-    else
-    return false;
+                else
+                reject("Você está sem internet!")
+            }
+    
+            else
+            reject('Você está offline!')
+        });
+    })
 }
 
-export default isConnected;
+export default verifyConnectionNetwork;

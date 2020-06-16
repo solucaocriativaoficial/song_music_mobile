@@ -1,5 +1,5 @@
 import Api from '../../services/Api';
-import {findAll, insert, update} from './controllers/cdController';
+import {findAll, insert, update, remove} from './controllers/cdController';
 import {getAccessDevice} from './controllers/Access_devicesController';
 
 async function firstAccess(){
@@ -13,29 +13,27 @@ async function firstAccess(){
         return {sync: true, message: 'Cd atualizado com sucesso!'}
         
     } catch (error) {
-        return {sync: false, message: error}
+        return {sync: false, message: error.message}
     }
 }
 
 async function syncUpdate(){
     try {
         const dataAccessDevices = await getAccessDevice();
-        const {date_current_access} = dataAccessDevices._array[0];
-        const getDataCloud = await Api.post('/sync/cd/',{dateTime: date_current_access});
-        const {count, content} = getDataCloud.data;
-        if(count)
-        {
-            const {update: updateList, news} = content;
-            if(updateList.length)
-            await update(updateList);
+        const {last_acess} = dataAccessDevices._array[0];
+        const getDataCloud = await Api.post('/sync/cd/',{dateTime: last_acess});
+        const {content} = getDataCloud.data;
+        const {update: updateList, news, remove:removeList} = content;            
+        if(removeList.length)
+        await remove(removeList);
 
-            if(news.length)
-            await insert(news);
+        if(updateList.length)
+        await update(updateList);
 
-            return {sync: true, message: 'Cds atualizados com sucesso!'}
-        }
-        else
-        return {sync: true, message: 'Cds estão atualizados!'}
+        if(news.length)
+        await insert(news);
+
+        return {sync: true, message: 'Cds atualizados com sucesso!'}
         
     } catch (error) {
         return {sync: false, message: error}
@@ -47,13 +45,13 @@ const SyncCd = async () => {
         const contentListCd = await findAll();
         const {length} = contentListCd;
         if(length)
-        return await syncUpdate()
+        return await syncUpdate();
 
         else
         return await firstAccess()
 
     } catch (error) {
-        console.log(error)
+        return {sync: false, message: error}
     }
 }
 

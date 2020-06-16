@@ -3,6 +3,7 @@ import StylePattern from '../../styles/StylesPattern';
 
 const heightScreen = Dimensions.get("screen").height;
 const widthScreen = Dimensions.get("screen").width;
+const heightLetter = heightScreen - 100;
 
 const Style = StyleSheet.create({
     containerMain:{
@@ -49,6 +50,19 @@ const Style = StyleSheet.create({
         width: 24,
         height: 24,
     },
+    containerLetter:{
+        height: '100%',
+    },
+    containerMessageEmpty:{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    textMessageEmpty:{
+        color: StylePattern.color_primary,
+        fontSize: 16,
+        fontWeight: "bold",
+    }
 })
 
 export default Style;

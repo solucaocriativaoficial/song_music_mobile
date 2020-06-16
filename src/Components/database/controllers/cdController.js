@@ -16,10 +16,13 @@ export function insert(content){
         Connection.transaction(ctx => {
             content.map(cd => {
                 const {_id, cd_name, year, createdAt, updateAt} = cd;
-                ctx.executeSql(
-                    `insert into cd (id ,cd_name, year, createdAt, updateAt) values(?,?,?,?,?)`,
-                    [_id, cd_name, year, createdAt, updateAt]
-                )
+                ctx.executeSql('select id from cd where id=?',[_id], (_, {rows}) => {
+                    if(!rows.length)
+                    ctx.executeSql(
+                        `insert into cd (id ,cd_name, year, createdAt, updateAt) values(?,?,?,?,?)`,
+                        [_id, cd_name, year, createdAt, updateAt]
+                    )
+                })
             })
         },
         error => reject(error),
@@ -35,11 +38,24 @@ export function update(content){
                 const {_id, cd_name, year, createdAt, updateAt} = cd;
                 ctx.executeSql(
                     `update cd  set cd_name=?, year=?, createdAt=?, updateAt=? where id=?`,
-                    [cd_name, year, createdAt, updateAt, _id],
-                    () => {},
-                    err => {
-                        console.log(err)
-                    }
+                    [cd_name, year, createdAt, updateAt, _id]
+                )
+            })
+        },
+        error => reject(error),
+        () => resolve()
+        )
+    })
+}
+
+export function remove(content){
+    return new Promise((resolve, reject) => {
+        Connection.transaction(ctx => {
+            content.map(cd => {
+                const {_id} = cd;
+                ctx.executeSql(
+                    `delete from cd where id=?`,
+                    [_id]
                 )
             })
         },

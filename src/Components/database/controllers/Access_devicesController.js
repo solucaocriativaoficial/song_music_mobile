@@ -1,4 +1,5 @@
 import Connection from '../Conection';
+import {currentTime} from '../../generatorDate';
 export function getAccessDevice(){
     return new Promise((resolve, reject) => {
         Connection.transaction(ctx => {
@@ -11,11 +12,11 @@ export function getAccessDevice(){
     })
 }
 
-export function addCurrentTime(time){
+export function addLastAcess(){
     return new Promise((resolve, reject) => {
         Connection.transaction(ctx => {
             ctx.executeSql(
-                "update access_devices set date_current_access=? where id='1'", [time],
+                "update access_devices set last_acess=? where id='1'", [currentTime()],
                 () => resolve({success: true}), 
                 error => reject(error)
             );

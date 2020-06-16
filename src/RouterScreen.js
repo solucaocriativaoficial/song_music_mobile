@@ -9,25 +9,13 @@ const Stack = createStackNavigator();
 export default function RouterScreen(){
     return(
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Initial" headerMode="none" screenOptions={{
-                transitionSpec:{
-                    open: {
-                        animation: "spring",
-                        config: {
-                            speed: 3000,
-                            velocity: 1000,
-                        }
-                    },
-                    close: {
-                        animation: "spring",
-                        config: {
-                            speed: 1000,
-                        }
-                    }
-                }
-            }}>
-                <Stack.Screen name="Initial" component={Initial}/>
-                <Stack.Screen name="SelectedSong" component={SelectedSong}/>
+            <Stack.Navigator initialRouteName="Initial" headerMode="none">
+                <Stack.Screen name="Initial" component={Initial} options={{
+                    animationEnabled: false,
+                }}/>
+                <Stack.Screen name="SelectedSong" component={SelectedSong} options={{
+                    animationEnabled: false,
+                }}/>
             </Stack.Navigator>
         </NavigationContainer>
     )

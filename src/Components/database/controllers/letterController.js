@@ -27,12 +27,13 @@ export function insert(content){
         Connection.transaction(ctx => {
             content.map(letter => {
                 const {_id, strofe, song, sequence, createdAt, updateAt} = letter;
-                ctx.executeSql(
-                    `insert into letter (id ,strofe, song, sequence, createdAt, updateAt) values(?,?,?,?,?,?)`,
-                    [_id, strofe, song, sequence, createdAt, updateAt],
-                    () => console.log(`${_id} foi cadastrado com sucesso`),
-                    error => console.log(error)
-                )
+                ctx.executeSql('select id from letter where id=?',[_id], (_, {rows}) => {
+                    if(!rows.length)
+                    ctx.executeSql(
+                        `insert into letter (id ,strofe, song, sequence, createdAt, updateAt) values(?,?,?,?,?,?)`,
+                        [_id, strofe, song, sequence, createdAt, updateAt],
+                    )
+                })
             })
         },
         error => reject(error),
@@ -53,6 +54,23 @@ export function update(content){
                     err => {
                         console.log(err)
                     }
+                )
+            })
+        },
+        error => reject(error),
+        () => resolve()
+        )
+    })
+}
+
+export function remove(content){
+    return new Promise((resolve, reject) => {
+        Connection.transaction(ctx => {
+            content.map(letter => {
+                const {_id} = letter;
+                ctx.executeSql(
+                    `delete from letter where id=?`,
+                    [_id]
                 )
             })
         },
