@@ -8,7 +8,7 @@ import iconFavoriteOn from '../assets/icon-favorite-on.png';
 import iconFavoriteOff from '../assets/icon-favorite-off.png';
 import {favorite, findByIdSong} from './database/controllers/songController';
 
-export default function Favorite({item}){
+export default function Favorite({ item, removeSongFavoriteList = () => {} }){
     const [stateFavorite, setStateFavorite] = useState(0);
 
     useEffect(() => {
@@ -24,6 +24,7 @@ export default function Favorite({item}){
         const handleIfTrueFavorite = stateFavorite ? 0 : 1;
         await favorite(song_id, handleIfTrueFavorite)
         setStateFavorite(handleIfTrueFavorite);
+        removeSongFavoriteList(item.song_id)
     }
 
     return(
