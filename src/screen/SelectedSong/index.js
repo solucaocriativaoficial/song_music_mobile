@@ -13,7 +13,6 @@ import StylePattern from '../../styles/StylesPattern';
 import iconGoBack from '../../assets/icon-goBack.png';
 import iconFavoriteOn from '../../assets/icon-favorite-on.png';
 import iconFavoriteOff from '../../assets/icon-favorite-off.png';
-import iconPlay from '../../assets/icon-play.png';
 import {findById} from '../../Components/database/controllers/letterController';
 import {findByIdSong, favorite} from '../../Components/database/controllers/songController';
 
@@ -47,9 +46,9 @@ export default function SelectedSong({route, navigation}){
     },[])
 
     async function handleFavorite(song_id){
-        // const handleIfTrueFavorite = actionFavorite ? 0 : 1;
-        // await favorite(song_id, handleIfTrueFavorite)
-        // setActionFavorite(handleIfTrueFavorite);
+        const handleIfTrueFavorite = actionFavorite ? 0 : 1;
+        await favorite(song_id, handleIfTrueFavorite)
+        setActionFavorite(handleIfTrueFavorite);
     }
 
     return(
@@ -65,9 +64,6 @@ export default function SelectedSong({route, navigation}){
                     <Text style={Style.cd}>{`${cd} - ${year}`}</Text>
                 </View>
                 <View style={Style.action}>
-                    <TouchableOpacity onPress={() => alert('Esta ação ainda não está funcionando')}>
-                        <Image source={iconPlay} alt="" style={Style.iconsActions}/>
-                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => handleFavorite(song_id)}>
                         <Image source={actionFavorite ? iconFavoriteOn : iconFavoriteOff} alt="" style={Style.iconsActions}/>
                     </TouchableOpacity>

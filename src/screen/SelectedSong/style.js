@@ -43,7 +43,7 @@ const Style = StyleSheet.create({
     },
     action:{
         flexDirection: "row",
-        width: 60,
+        width: 30,
         justifyContent: "space-between",
     },
     iconsActions: {
