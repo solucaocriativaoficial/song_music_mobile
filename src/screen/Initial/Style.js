@@ -41,7 +41,7 @@ const Style = StyleSheet.create({
         flex: 1,
     },
     contentSongs:{
-        flex: 0.9,
+        flex: 0.8,
         paddingHorizontal: 5,
     },
     containerSong:{
@@ -75,7 +75,7 @@ const Style = StyleSheet.create({
     iconFavorite: {
         width: 24,
         height: 24,
-    }
+    },
 })
 
 export default Style;

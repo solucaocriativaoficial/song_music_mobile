@@ -1,4 +1,5 @@
 import React,{useState, useEffect} from 'react';
+import {} from '@react-navigation/native';
 import {
     Text,
     View,
@@ -10,11 +11,11 @@ import {
     Keyboard
 }from 'react-native';
 import Style from './Style';
-import Logo from '../../assets/icon-logo.png';
 import iconSearch from "../../assets/icon-search.png";
 import ModalSyncStatus from '../../Components/Modals/SyncStatus';
-import {SongCompleteController, SearchSong} from '../../Components/database/controllers/SongCompleteController';
+import {SongCompleteController, SearchSong, songSearchFavorite} from '../../Components/database/controllers/SongCompleteController';
 import Favoritar from '../../Components/Favorite';
+import Footer from '../../Components/Footer';
 
 export default function Initial({navigation}){
     const [songs,setSongs] = useState([]);
@@ -25,7 +26,7 @@ export default function Initial({navigation}){
     useEffect(() => {
         async function getList(){
             try {
-                const {_array} = await SongCompleteController();
+                const {_array} = await SongCompleteController(false);
                 setSongs(_array)
 
                 if(!_array.length)
@@ -36,7 +37,7 @@ export default function Initial({navigation}){
         }
 
         async function getSearch(){
-            const {count,_array} = await SearchSong(search);
+            const {count,_array} = await SearchSong(search, false);
             setSongs(_array)
             if(!count)
             setMessageMain('Nenhum Song encontrado')
@@ -54,9 +55,6 @@ export default function Initial({navigation}){
         <StatusBar barStyle="dark-content" backgroundColor="#fff"/>
         <View style={Style.containerMain}>
             <View style={Style.header}>
-                <View style={Style.containerLogo}>
-                    <Image source={Logo} alt="SONG" style={Style.imgLogo}/>
-                </View>
                 <View style={Style.containerInput}>
                     <Image source={iconSearch} alt="" style={Style.imgSearch}/>
                     <TextInput
@@ -87,13 +85,14 @@ export default function Initial({navigation}){
                                 <Text style={Style.nameSong}>{item.song_name}</Text>
                                 <Text style={Style.cd}>{`${item.cd_name} - ${item.year}`}</Text>
                             </TouchableOpacity>
-                            <Favoritar item={item}/>
+                            {/* <Favoritar item={item}/> */}
                         </View>
                     )}
                     keyExtractor={item => item.song_id}
                 />
             }
         </View>
+        <Footer navigation={navigation}/>
         <ModalSyncStatus show={syncData} close={() => setSyncData(false)}/>
         </>
     )
