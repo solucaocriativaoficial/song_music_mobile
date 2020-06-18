@@ -23,7 +23,7 @@ async function syncUpdate(){
         const {last_acess} = dataAccessDevices._array[0];
         const getDataCloud = await Api.post('/sync/song/',{dateTime: last_acess});
         const {content} = getDataCloud.data;
-        const {update: updateList, news, remove:removeList} = content;            
+        const {update: updateList, news, remove:removeList} = content;
         if(removeList.length)
         await remove(removeList);
 
@@ -31,7 +31,7 @@ async function syncUpdate(){
         await update(updateList);
 
         if(news.length)
-        // await insert(news);
+        await insert(news);
 
         return {sync: true, message: 'Songs atualizados com sucesso!'}
         
